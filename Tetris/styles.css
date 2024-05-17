@@ -1,0 +1,165 @@
+.two-column-layout { 
+    position: relative;
+    display: grid;              /* Use CSS Grid */ 
+    grid-template-columns: 1fr 1fr;   /* Create two equal-width columns */ 
+    grid-gap: 20px;             /* Add spacing between columns (adjust as needed) */ 
+  } 
+
+.grid {
+    margin-top: 20px;
+    width: 320px;
+    height: 640px;
+    border: solid black 2px;
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 60px;
+}
+
+.game-menu-popup {
+    top: 180px;
+    left: 60px;
+    width: 320px;
+    height: 156px;
+    border: solid black 2px;
+    background-color: white;
+    position: absolute;
+    z-index: 0;
+    display: none;
+    text-align: center;
+    padding-top: 4px;
+}
+
+.game-display {
+    text-align: center;
+    font-size: 50px;
+    font-weight: bold;
+    font: Arial;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#button {
+    margin: 16px;
+    margin-top: 10px;
+    padding: 16px;
+    align-content: center;
+    background-color: black;
+    color: white;
+    text-align: center;
+    font-size: 32px;
+}
+
+.grid div {
+    width: 30.4px;
+    height: 30.4px;
+    border: solid black 1px;
+}
+
+.current-block {
+    width: 30.4px;
+    height: 30.4px;
+}
+
+.iblock {
+    width: 30.4px;
+    height: 30.4px;
+    background-color: cyan;
+}
+
+.jblock {
+    width: 30.4px;
+    height: 30.4px;
+    background-color: blue;
+}
+
+.lblock {
+    width: 30.4px;
+    height: 30.4px;
+    background-color: orange;
+}
+
+.oblock {
+    width: 30.4px;
+    height: 30.4px;
+    background-color: yellow;
+}
+
+.sblock {
+    width: 30.4px;
+    height: 30.4px;
+    background-color: greenyellow;
+}
+
+.tblock {
+    width: 30.4px;
+    height: 30.4px;
+    background-color: purple;
+}
+
+.zblock {
+    width: 30.4px;
+    height: 30.4px;
+    background-color: red;
+}
+
+.shadow {
+    width: 30.4px;
+    height: 30.4px;
+    background-color: gray;
+}
+
+.base {
+    width: 30.4px;
+    height: 30.4px;
+    background-color: white;
+}
+
+.hidden {
+    background-color: black;
+}
+
+.occupied {
+    width: 30.4px;
+    height: 30.4px;
+}
+
+.bottom-row {
+    width: 30.4px;
+    height: 30.4px;
+}
+
+.info {
+    margin-top: 10px;
+    margin-right: 700px;
+    text-align: center;
+    font-size: 40px;
+    font: Arial;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.title {
+    font-size: 100px;
+    margin-top: 20px;
+    margin-bottom: 50px;
+}
+
+.pause-game-info {
+    font-size: 40px;
+}
+
+.score {
+    margin-bottom: 0px;
+}
+
+.result {
+    font-size: 50px;
+    font-weight: bold;
+}
+
+.level-heading {
+    margin-top: 40px;
+}
+
+.level {
+    font-size: 40px;
+    font-weight: bold;
+}
