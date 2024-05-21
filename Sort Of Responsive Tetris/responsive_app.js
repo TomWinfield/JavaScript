@@ -21,6 +21,7 @@ const totalSquares = 200
 const rows = []
 var newBlock = false
 var intervalLength = 1000
+var savedIntervalLength = intervalLength
 var blockOrientation
 var reversedOrder = false
 var finishedAnimation = true
@@ -183,6 +184,7 @@ function removeBlockTooTwo() {
 function goGame() {
     blockId = setInterval(dropBlockInterval, intervalLength)
     document.addEventListener('keydown', dropBlockKey)
+    document.addEventListener('keydown', instantDropBlock)
     document.addEventListener('keydown', lateralMoveBlock)
     document.addEventListener('keydown', rotateBlockTwo)
 }
@@ -190,15 +192,16 @@ function goGame() {
 //turn off block movement and player controls
 function stopGame() {
     clearInterval(blockId)
-    document.removeEventListener('keydown', lateralMoveBlock)
     document.removeEventListener('keydown', dropBlockKey)
+    document.removeEventListener('keydown', instantDropBlock)
+    document.removeEventListener('keydown', lateralMoveBlock)
     document.removeEventListener('keydown', rotateBlockTwo)
 }
 
 //stop game running and diplsay game paused box or start game and hide game paused box when spacebar pressed
 function pauseGame(e) {
     switch (e.key) {
-        case ' ':
+        case 'p':
             if (gamePaused == false) {
                 stopGame()
                 gameDisplay.innerHTML = 'GAME PAUSED'
@@ -254,6 +257,9 @@ function resetGame() {
     rows[19].forEach(element => {
         element.classList.add('bottom-row');
     });
+    nextBlockBoxSquares.forEach(nextBlockBoxSquare => {
+        nextBlockBoxSquare.classList.remove(...nextBlockBoxSquare.classList);
+    });
     totalLinesCleared = 0
     totalScore = 0
     resultDisplay.innerHTML = totalScore
@@ -276,6 +282,7 @@ function gameOver() {
     button.style.display = 'inline'
     button.textContent = 'PLAY AGAIN'
     document.removeEventListener('keydown', pauseGame)
+    document.removeEventListener('keydown', instantDropBlock)
     button.removeEventListener('click', startGame)
     button.addEventListener('click', restartGame)
     stopGame()
@@ -435,6 +442,7 @@ function checkForVerticalCollision() {
                     checkingLines = true
                     blockRowsLooper('remove', 'current-block', 'add', 'occupied')
                     stopGame()
+                    intervalLength = savedIntervalLength
                     document.removeEventListener('keydown', pauseGame)
                     fullLineChecker().then((returnedPromise) => {
                         if (returnedPromise == true) {
@@ -455,6 +463,7 @@ function checkForVerticalCollision() {
                     checkingLines = true
                     blockRowsLooper('remove', 'current-block', 'add', 'occupied')
                     stopGame()
+                    intervalLength = savedIntervalLength
                     document.removeEventListener('keydown', pauseGame)
                     fullLineChecker().then((returnedPromise) => {
                         if (returnedPromise == true) {
@@ -758,6 +767,15 @@ function rotateBlockTwo(e) {
     }
 }
 
+function instantDropBlock(e) {
+    if (e.key == ' ') {
+        stopGame()
+        savedIntervalLength = intervalLength
+        intervalLength = 1
+        goGame()
+    }
+}
+
 //move block down one row if user presses arrow down key
 function dropBlockKey(e) {
     if (e.key == 'ArrowDown') {
@@ -789,6 +807,10 @@ function dropBlockInterval() {
                 removeBlockTooTwo()
                 moveBlock(10, +1)
                 drawBlockToo()
+                if (intervalLength == 1) {
+                    totalScore += 2*level
+                    resultDisplay.innerHTML = totalScore
+                }
             }
         }
     })

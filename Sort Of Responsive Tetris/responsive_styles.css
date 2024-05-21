@@ -95,7 +95,6 @@
     aspect-ratio: 3/1;
     top: 50%;
     right: 20%;
-    /* margin-top: 25%; */
     align-content: center;
     background-color: black;
     color: white;
@@ -184,24 +183,30 @@
 }
 
 .pause-game-info {
-    font-size: 4vh;
-    margin-bottom: 5%;
+    font-size: 3vh;
+    /* margin-bottom: 2%; */
+}
+
+.drop-block-info {
+    font-size: 3vh;
+    margin-top: -2%;
+    margin-bottom: 8%;
 }
 
 .score {
-    font-size: 6vh;
-    margin-top: 1%;
+    font-size: 5vh;
+    margin-top: 5%;
     margin-bottom: 0%;
 }
 
 .result {
-    font-size: 8vh;
+    font-size: 6vh;
     font-weight: bold;
 }
 
 .level-heading {
-    font-size: 5vh;
-    margin-top: 5%;
+    font-size: 4vh;
+    margin-top: 4%;
 }
 
 .right-border {
