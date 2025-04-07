@@ -1,55 +1,44 @@
-const layout = document.querySelector('.layout')
-const game = document.querySelector('.game')
+const twoColumnLayout = document.querySelector('.two-column-layout')
 const grid = document.querySelector('.grid')
-const nextBlockBoxGrid = document.querySelector('.next-block-box')
 const resultDisplay = document.querySelector('.result')
 const levelDisplay = document.querySelector('.level')
-var blockId
-var nextBlockName
-var blockName
-var nextBlockRow
-var blockRows
-var previousBlockRows
-var rowOne; var rowTwo
+let blockId
+let blockName
+let blockExists = false
+let blockRows
+let rowOne; let rowTwo
 const width = 10
-var atEdge = false
+let atEdge = false
 const atLeftEdge = (leftEdge) => leftEdge % width === 0
 const atRightEdge = (rightEdge) => (rightEdge - 9) % width === 0 
-var disableArrowLeft = false
-var disableArrowRight = false
+let disableArrowLeft = false
+let disableArrowRight = false
+let currentLowestClearRow = 200
 const totalSquares = 200
 const rows = []
-var newBlock = false
-var intervalLength = 1000
-var savedIntervalLength = intervalLength
-var blockOrientation
-var reversedOrder = false
-var finishedAnimation = true
+let newBlock = false
+let intervalLength = 2000
+let blockOrientation
+let reversedOrder = false
+let emptyRows
+let finishedAnimation = true
 var level = 1
 var totalScore = 0
 const singleLineScore = 100; const doubleLineScore = 300; const tripleLineScore = 500; const quadrupleLineScore = 800
 var totalLinesCleared = 0
 var gamePaused = false
-const gameMenuPopup = document.querySelector('.game-menu-popup')
-const gameDisplay = document.querySelector('.game-display')
+const gameMenuPopup = document.createElement('two-column-layout')
+const gameDisplay = document.createElement('game-menu-popup')
 const button = document.querySelector('#button')
-var newGame = true
 
-//create 10x20 grid of squares for game box
+
+//create 10x20 grid of squares
 for (let i = 0; i < totalSquares; i++) {
     const square = document.createElement('div')
     grid.appendChild(square)
 }
 
 const squares = Array.from(document.querySelectorAll('.grid div'))
-
-//create 5x10 grid of squares for next block box
-for (let i = 0; i < 50; i++) {
-    const nextBlockBoxSquare = document.createElement('div')
-    nextBlockBoxGrid.appendChild(nextBlockBoxSquare)
-}
-
-const nextBlockBoxSquares = Array.from(document.querySelectorAll('.next-block-box div'))
 
 //create 2d array to represent rows
 for (let i = 0; i < totalSquares; i += width) {
@@ -100,7 +89,7 @@ function decreaseInterval() {
         if (totalLinesCleared - (level*10) >= 0) {
             console.log('Total Lines Cleared:', totalLinesCleared)
             intervalLength -= (intervalLength / 10)
-            console.log('Interval Length:', intervalLength)
+            console.log('Interval Lenght:', intervalLength)
             level += 1
             levelDisplay.innerHTML = level
             console.log('Level', level)
@@ -110,13 +99,15 @@ function decreaseInterval() {
 
 //choose next block to appear
 function chooseBlock() {
-    nextBlockRows = [rowOne = [], rowTwo = [],]
+    // console.log('CHOOSEBLOCK FUNCTION -')
+    blockRows = [rowOne = [], rowTwo = [],]
     blockOrientation = 'horizontal'
+    // nextBlock = Object.entries(blocks[0])
     const randomNumber = Math.floor(Math.random() * 7)
     const nextBlock = Object.entries(blocks[randomNumber])
     for (const [key, value] of Object.entries(nextBlock)) {
         if (typeof value[1] == "string") {
-            nextBlockName = value[1]
+            blockName = value[1]
         } else if (value[1][0][0] == 0) {
             rowOne.push(value[1][0][1])
         } else {
@@ -128,6 +119,7 @@ function chooseBlock() {
 
 //apply class changes to each square comprising block
 function blockRowsLooper(methodOne, argOne, methodTwo, argTwo) {
+    // console.log('BLOCKROWS LOOPER FUNCTION -')
     blockRows.forEach(blockRow => {
         blockRow.forEach(element => {
             if (methodOne == 'add'){
@@ -135,82 +127,59 @@ function blockRowsLooper(methodOne, argOne, methodTwo, argTwo) {
             } else if (methodOne == 'remove'){
                 squares[element].classList.remove(argOne)
             } else {
-                //do nothing
+
             }
             if (methodTwo == 'add'){
                 squares[element].classList.add(argTwo)
             } else if (methodTwo == 'remove'){
                 squares[element].classList.remove(argTwo)
             } else {
-                //do nothing
+
             }
         });
     });
 }
 
-//show next block in next block box
-function displayNextBlock() {
-    previousBlockRows = []; previousBlockName = nextBlockName
-    nextBlockRows.forEach(nextBlockRow => {
-        previousBlockRows.push([...nextBlockRow])
-        nextBlockRow.forEach(element => {
-            nextBlockBoxSquares[element + 20].classList.add(nextBlockName)
-        })
-    })
-}
-
-//remove previous block from next block box
-function hidePreviousBlock() {
-    blockRows = []; blockName = nextBlockName
-    previousBlockRows.forEach(previousBlockRow => {
-        blockRows.push([...previousBlockRow])
-        previousBlockRow.forEach(element => {
-            nextBlockBoxSquares[element + 20].classList.remove(blockName)
-        })
-    })
-}
-
 //draw block after movement
 function drawBlockToo() {
+    // console.log('DRAW BLOCK FUNCTION -')
     blockRowsLooper('add', blockName, 'add', 'current-block')
+    blockExists = true
 }
 
 //remove block before movement
 function removeBlockTooTwo() {
+    // console.log('REMOVEBLOCK FUNCTION -')
     blockRowsLooper('remove', blockName, 'remove', 'current-block')
 }
 
-//turn on block movement and player controls
 function goGame() {
+    console.log('UNFREEZE GAME FUNCTION -')
     blockId = setInterval(dropBlockInterval, intervalLength)
     document.addEventListener('keydown', dropBlockKey)
-    document.addEventListener('keydown', instantDropBlock)
     document.addEventListener('keydown', lateralMoveBlock)
     document.addEventListener('keydown', rotateBlockTwo)
 }
 
-//turn off block movement and player controls
 function stopGame() {
+    console.log('FREEZE GAME FUNCTION -')
     clearInterval(blockId)
-    document.removeEventListener('keydown', dropBlockKey)
-    document.removeEventListener('keydown', instantDropBlock)
     document.removeEventListener('keydown', lateralMoveBlock)
+    document.removeEventListener('keydown', dropBlockKey)
     document.removeEventListener('keydown', rotateBlockTwo)
 }
 
-//stop game running and diplsay game paused box or start game and hide game paused box when spacebar pressed
 function pauseGame(e) {
+    console.log('PAUSE GAME FUNCTION -')
     switch (e.key) {
-        case 'p':
+        case ' ':
             if (gamePaused == false) {
                 stopGame()
                 gameDisplay.innerHTML = 'GAME PAUSED'
-                gameDisplay.style.marginTop = '5%'
                 gameMenuPopup.style.display = 'block'
                 button.style.display = 'none'
                 gamePaused = true
             } else if (gamePaused == true) {
-                gameDisplay.style.marginTop = '0%'
                 gameMenuPopup.style.display = 'none'
                 button.style.display = 'block'
                 goGame()
@@ -222,22 +191,19 @@ function pauseGame(e) {
     }
 }
 
-//start game when button pressed
 function startGame() {
+    console.log('START GAME FUNCTION -')
+    console.log('started game after button pressed')
     gameMenuPopup.style.display = 'none'
-    blockRows = []
     chooseBlock()
-    displayNextBlock()
-    hidePreviousBlock()
-    chooseBlock()
-    displayNextBlock()
     drawBlockToo()
     goGame()
     document.addEventListener('keydown', pauseGame)
 }
 
-//display start game button
 function startGameButton() {
+    console.log('START GAME BUTTON FUNCTION -')
+    twoColumnLayout.appendChild(gameMenuPopup)
     gameMenuPopup.classList.add('game-menu-popup')
     gameMenuPopup.style.display = 'block'
     gameMenuPopup.appendChild(gameDisplay)
@@ -251,14 +217,12 @@ function startGameButton() {
 
 //reset game to be ready to play again
 function resetGame() {
+    console.log('RESET GAME FUNCTION -')
     squares.forEach(square => {
         square.classList.remove(...square.classList);
     });
     rows[19].forEach(element => {
         element.classList.add('bottom-row');
-    });
-    nextBlockBoxSquares.forEach(nextBlockBoxSquare => {
-        nextBlockBoxSquare.classList.remove(...nextBlockBoxSquare.classList);
     });
     totalLinesCleared = 0
     totalScore = 0
@@ -276,13 +240,14 @@ function restartGame() {
 
 //display game menu popup and play again button
 function gameOver() {
+    console.log('GAME OVER FUNCTION -')
+    twoColumnLayout.appendChild(gameMenuPopup)
     gameMenuPopup.classList.add('game-menu-popup')
     gameMenuPopup.style.display = 'block'
     gameDisplay.innerHTML = 'GAME OVER'
     button.style.display = 'inline'
     button.textContent = 'PLAY AGAIN'
     document.removeEventListener('keydown', pauseGame)
-    document.removeEventListener('keydown', instantDropBlock)
     button.removeEventListener('click', startGame)
     button.addEventListener('click', restartGame)
     stopGame()
@@ -309,6 +274,7 @@ function gameOver() {
 
 //check if any rows have been filled and if so trigger row clear animation
 function fullLineChecker() {
+    // console.log('LINE CHECKER FUNCTION -')
     return new Promise((resolve, reject) => {
 
         //check if all squares in row are filled
@@ -316,8 +282,13 @@ function fullLineChecker() {
             return place.classList.contains('occupied') || place.classList.contains('current-block');
         }
 
+        function checkEmptyLine(place) {
+            return !place.classList.contains('occupied')
+        }
+
         //animate row clearance
         function iterateInterval(testSquaresArray, delay) {
+            // console.log('ITERATE INTERVAL FUNCTION -')
             return new Promise((resolve, reject) => {
                 let columnCount = 0
                 let finishedDrops = false
@@ -340,6 +311,9 @@ function fullLineChecker() {
                         }
                         columnCount++
                         if (columnCount == testSquaresArray.length) {
+                            // fillInRows().then((rowsFilledIn => {
+                            //     finishedDrops = rowsFilledIn
+                            // }));
                             dropRows().then((rowsDropped => {
                                 finishedDrops = rowsDropped
                             }));
@@ -351,6 +325,7 @@ function fullLineChecker() {
 
         //animate row drops after row clearance animation
         function dropRows() {
+            console.log('DROP ROWS FUNCTION -')
             return new Promise((resolve, reject) => {
                 let droppedRowsId = setInterval(() => {
                     let rowsDropped = false
@@ -382,6 +357,7 @@ function fullLineChecker() {
 
         //update score after row clearance
         function scoreTracker() {
+            // console.log('SCORETRACKER FUNCTION -')
             let instanceScore
             switch(emptyRows.length) {
                 case 0:
@@ -399,17 +375,20 @@ function fullLineChecker() {
                     instanceScore = quadrupleLineScore * level
                     break
             }
+            console.log('instanceScore =', instanceScore)
             totalLinesCleared += emptyRows.length
             totalScore += instanceScore
             resultDisplay.innerHTML = totalScore
         }
         
         let testSquaresArray = [[],[],[],[],[],[],[],[],[],[]]
+        let fullRows = [[],[],[],[],[],[],[],[],[],[]]
         let emptyRows = []
         for (let i = 0; i < rows.length; i++) {
             if (rows[i].every(checkLine) == true) {
                 emptyRows.push(i)
                 for (let j = 0; j < rows[j].length; j++) {
+                    fullRows[j].push(rows[i][j])
                     testSquaresArray[j].push(i*10 + j)
                 }
             }
@@ -432,6 +411,7 @@ function fullLineChecker() {
 
 //check if block can move down any further
 function checkForVerticalCollision() {
+    // console.log('VERTICAL COLLISION FUNCTION -')
     let checkedCollisions
     let checkingLines = false
     return new Promise((resolve, reject) => {
@@ -442,14 +422,11 @@ function checkForVerticalCollision() {
                     checkingLines = true
                     blockRowsLooper('remove', 'current-block', 'add', 'occupied')
                     stopGame()
-                    intervalLength = savedIntervalLength
                     document.removeEventListener('keydown', pauseGame)
                     fullLineChecker().then((returnedPromise) => {
                         if (returnedPromise == true) {
                             checkedCollisions = returnedPromise
-                            hidePreviousBlock()
                             chooseBlock()
-                            displayNextBlock()
                             drawBlockToo()
                             newBlock = true
                             goGame()
@@ -463,7 +440,6 @@ function checkForVerticalCollision() {
                     checkingLines = true
                     blockRowsLooper('remove', 'current-block', 'add', 'occupied')
                     stopGame()
-                    intervalLength = savedIntervalLength
                     document.removeEventListener('keydown', pauseGame)
                     fullLineChecker().then((returnedPromise) => {
                         if (returnedPromise == true) {
@@ -474,9 +450,7 @@ function checkForVerticalCollision() {
                                 gameOver()
                                 resolve(checkedCollisions)
                             } else {
-                                hidePreviousBlock()
                                 chooseBlock()
-                                displayNextBlock()
                                 drawBlockToo()
                                 newBlock = true
                                 goGame()
@@ -497,6 +471,7 @@ function checkForVerticalCollision() {
 
 //check if block can move left or right any further
 function checkForHorizontalCollision() {
+    // console.log('HORIZONTAL COLLISION FUNCTION -')
     for (let i = 0; i < rows.length; i++) {
         for (let j = 0; j < rows[i].length; j++) {
             if (j != 0 && j != 9 &&
@@ -524,6 +499,7 @@ function moveBlock(increment, sign) {
 
 //check if block is at left edge of grid
 function checkLeftEdge() {
+    // console.log('CHECK LEFT EDGE FUNCTION -')
     blockRows.forEach(blockRow => {
         if (blockRow.some(atLeftEdge)) {
             atEdge = true
@@ -537,6 +513,7 @@ function checkLeftEdge() {
 
 //check if block is at right edge of grid
 function checkRightEdge() {
+    // console.log('CHECK RIGHT EDGE FUNCTION -')
     blockRows.forEach(blockRow => {
         if (blockRow.some(atRightEdge)) {
             atEdge = true
@@ -550,6 +527,7 @@ function checkRightEdge() {
 
 //move block left or right one space depending on arrow key input
 function lateralMoveBlock(e) {
+    // console.log('LATERAL MOVEBLOCK FUNCTION -')
     switch(e.key) {
         case 'ArrowLeft':
             if (disableArrowLeft == false) {
@@ -578,8 +556,9 @@ function lateralMoveBlock(e) {
     disableArrowRight = false
 }
 
-//rotate block clockwise 90 degrees and move block if rotation crosses edge of box
+//rotate block clockwise 90 degrees and move block if rotation crosses edge
 function experimentalBlockRotator(rowOneDistance, rowOneIncrement, rowTwoDistance, rowTwoIncrement) {
+    // console.log('EXPERIMENTAL BLOCK ROTATOR FUNCTION -')
 
     function checkLeftSide(position) {
         return position % 10 <= 4;
@@ -767,17 +746,9 @@ function rotateBlockTwo(e) {
     }
 }
 
-function instantDropBlock(e) {
-    if (e.key == ' ') {
-        stopGame()
-        savedIntervalLength = intervalLength
-        intervalLength = 1
-        goGame()
-    }
-}
-
 //move block down one row if user presses arrow down key
 function dropBlockKey(e) {
+    // console.log('DROPBLOCK KEY FUNCTION -')
     if (e.key == 'ArrowDown') {
         disableArrowLeft = false
         disableArrowRight = false
@@ -789,7 +760,7 @@ function dropBlockKey(e) {
                     removeBlockTooTwo()
                     moveBlock(10, +1)
                     drawBlockToo()
-                    totalScore += 1*level
+                    totalScore += 1
                     resultDisplay.innerHTML = totalScore
                 }
             }
@@ -807,10 +778,6 @@ function dropBlockInterval() {
                 removeBlockTooTwo()
                 moveBlock(10, +1)
                 drawBlockToo()
-                if (intervalLength == 1) {
-                    totalScore += 2*level
-                    resultDisplay.innerHTML = totalScore
-                }
             }
         }
     })
