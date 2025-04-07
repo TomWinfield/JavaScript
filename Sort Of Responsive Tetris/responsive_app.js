@@ -7,7 +7,7 @@ const levelDisplay = document.querySelector('.level')
 var blockId
 var nextBlockName
 var blockName
-var nextBlockRows
+var nextBlockRow
 var blockRows
 var previousBlockRows
 var rowOne; var rowTwo

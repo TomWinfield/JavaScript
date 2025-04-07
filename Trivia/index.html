@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet">
+        <title>Trivia!</title>
+        <script>
+            // TODO: Add code to check answers to questions
+
+            document.addEventListener('DOMContentLoaded', function() {
+
+                let response = document.querySelector('#response')
+
+                document.querySelector('#opt1').addEventListener('click', function() {
+                    opt1.style.backgroundColor = 'green'
+                    opt2.style.backgroundColor = '#d9edff';
+                    opt3.style.backgroundColor = '#d9edff';
+                    opt4.style.backgroundColor = '#d9edff';
+                    response.innerHTML = 'Correct!'
+
+                });
+
+                document.querySelector('#opt2').addEventListener('click', function() {
+                    opt2.style.backgroundColor = 'red'
+                    opt1.style.backgroundColor = '#d9edff';
+                    opt3.style.backgroundColor = '#d9edff';
+                    opt4.style.backgroundColor = '#d9edff';
+                    response.innerHTML = 'Incorrect'
+                });
+
+                document.querySelector('#opt3').addEventListener('click', function() {
+                    opt3.style.backgroundColor = 'red'
+                    opt1.style.backgroundColor = '#d9edff';
+                    opt2.style.backgroundColor = '#d9edff';
+                    opt4.style.backgroundColor = '#d9edff';
+                    response.innerHTML = 'Incorrect'
+                });
+                document.querySelector('#opt4').addEventListener('click', function() {
+                    opt4.style.backgroundColor = 'red'
+                    opt1.style.backgroundColor = '#d9edff';
+                    opt2.style.backgroundColor = '#d9edff';
+                    opt3.style.backgroundColor = '#d9edff';
+                    response.innerHTML = 'Incorrect'
+                });
+
+                document.querySelector('#check-answer').addEventListener('click', function() {
+                    let input = document.querySelector('input');
+                    if (input.value === 'Vermicelli') {
+                        input.style.backgroundColor = 'green';
+                        reply.innerHTML = 'Correct!';
+                    }
+                    else {
+                        input.style.backgroundColor = 'red';
+                        reply.innerHTML = 'Correct!';
+                    }
+                });
+
+            });
+
+        </script>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Trivia!</h1>
+        </div>
+
+        <div class="container">
+            <div class="section">
+                <h2>Part 1: Multiple Choice </h2>
+                <hr>
+                <!-- TODO: Add multiple choice question here -->
+                <h3>What is the coldest capital city in the world?</h3>
+                <p id="response"></p>
+                <button class="multi_choice" id="opt1">Ulaanbaatar</button>
+                <button class="multi_choice" id="opt2">Reykjavik</button>
+                <button class="multi_choice" id="opt3">Moscow</button>
+                <button class="multi_choice" id="opt4">Helsinki</button>
+            </div>
+
+            <div class="section">
+                <h2>Part 2: Free Response</h2>
+                <hr>
+                <!-- TODO: Add free response question here -->
+                <h3>Which type of pasta literally translates to 'little worms' in Italian?</h3>
+                <p id="reply"></p>
+                <input placeholder="Answer" type="text">
+                <button id="check-answer">Submit</button>
+            </div>
+        </div>
+    </body>
+</html>
